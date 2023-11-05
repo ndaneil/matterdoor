@@ -11,7 +11,7 @@ A problem I encountered during the pandemic attending onlinre lectures was that 
 
 ### 3D-printed parts
 
-**A fully interactive 3D view of the parts is available [here](./stl-preview.md)**
+**The STL files of the degined casing are available [here](./3dfiles)**
 
 ## Software
 
