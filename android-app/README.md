@@ -4,3 +4,7 @@ This code is a fork of [Google Home Mobile SDK Sample Applications for Matter](h
 
 The MatterDoor device can be commissioned to this app's Matter fabric and can be shared as well.
 
+
+<p align="center">
+  <img src="./3p-ecosystem/src/main/ic_launcher-playstore.png" width="200" />
+</p>
