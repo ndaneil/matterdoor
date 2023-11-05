@@ -5,7 +5,7 @@ A problem I encountered during the pandemic attending onlinre lectures was that 
 This project is an entry to the [Make it Matter!](https://www.hackster.io/contests/makeitmatter) contest.
 
 ## Matter
-<p align="center"><img src="./imgs/matter-logo.png" width="40%"></p>
+<p align="center"><img src="./imgs/matter-logo.png" width="40%" style="background-color:white;"></p>
 
 [Matter](https://csa-iot.org/all-solutions/matter/) is a new application-layer protocol developed by members of the Connectivity Stands Alliance aiming to be the industry standard protocol for all IoT devices. Both Google and Apple pledged to support it for their smart home ecosystems. An important feature is the ability of Matter-compatible devices to be commissioned into multiple ecosystems (called Matter fabrics), allowing the end user the freedom to choose their ecosystem without having to worry whether the device will support it. Additionally, simultaneous control from separate ecosystems is also possible. 
 
