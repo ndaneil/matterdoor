@@ -267,7 +267,7 @@ After editing and saving the `template.zap` file, the next step is to generate t
 👉 using output destination: <absolute-path-to-project-folder>/src/zap-generated
 🕐 File loading time: 119ms
 🤖 Generating files:
-    ✍  <absolute-path-to-project-folder>t/src/zap-generated/callback-stub.cpp
+    ✍  <absolute-path-to-project-folder>/src/zap-generated/callback-stub.cpp
     ✍  <absolute-path-to-project-folder>/src/zap-generated/CHIPClusters.h
     ✍  <absolute-path-to-project-folder>/src/zap-generated/gen_config.h
     ✍  <absolute-path-to-project-folder>/src/zap-generated/IMClusterCommandHandler.cpp
