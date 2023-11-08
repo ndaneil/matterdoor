@@ -545,7 +545,129 @@ Next, in the `app_task.h`, there are several changes:
 
 ```
 
-Some include directives are added, relating to the clusters we added. A new enum is introduced (`DispState`), which will be used to sync the state of the sign between the Matter fabric and the MatterDoor device. Several other functions are added and two static variables. 
+Some include directives are added, relating to the clusters we added. A new enum is introduced (`DispState`), which will be used to sync the state of the sign between the Matter fabric and the MatterDoor device. Several other functions are added and two static variables. The implementation of all of these functions is shown and explained below.
+
+The `app_task.cpp` file starts with the following macros and declarations:
+
+```diff
+  #include <zephyr/kernel.h>
+  #include <zephyr/logging/log.h>
+
++ #include <app-common/zap-generated/attributes/Accessors.h>
++ #include <errno.h>
++ #include <string.h>
++ #include <zephyr/drivers/led_strip.h>
++ #include <zephyr/device.h>
++ #include <zephyr/drivers/i2s.h>
++ #include <zephyr/sys/util.h>
++ #include <zephyr/sys/printk.h>
++ #define STRIP_NODE		DT_ALIAS(led_strip)
++ #define STRIP_NUM_PIXELS	DT_PROP(DT_ALIAS(led_strip), chain_length)
++ #define DELAY_TIME K_MSEC(6)
++ #define RGB(_r, _g, _b) { .r = (_r), .g = (_g), .b = (_b) }
++ #define DISPLAY_TASK_PRIORITY 1
++ static struct led_rgb pixels[STRIP_NUM_PIXELS];
++ static const struct device *const strip = DEVICE_DT_GET(STRIP_NODE);
++ K_THREAD_DEFINE(disp_thread, 2048, AppTask::dispThread, NULL, NULL, NULL, DISPLAY_TASK_PRIORITY, 0, 0);
+```
+
+After the includes, we get the `STRIP_NODE` from the devicetree and the number of pixel of our LED strip from that node. We define a 6 millisecond delay time which will be used for the times between two frames of the `BUSY` and `FREE` state animations. We also define a more conenient way to use RGB colors. The `DISPLAY_TASK_PRIORITY` is used for the new thread we are defining in the last line in the above code. This thread is responsible for displaying the animations on our five-row WS2812b display. We also define the `pixels` variable which we will use to set the colors of the strip and the `strip` variable, which will be used to control the the LED strip. Let's check the dispThread function next:
+
+```c
+void AppTask::dispThread(void){
+	int rc;
+	printk("Display thread started\n");
+	if (device_is_ready(strip)) {
+		LOG_INF("Found LED strip device %s", strip->name);
+	} else {
+		LOG_ERR("LED strip device %s is not ready", strip->name);
+		return;
+	}
+	LOG_INF("Displaying pattern on strip");
+	memset(&pixels, 0x00, sizeof(pixels));
+	DispState prevState = Instance().currentState;
+	DispState nextState = Instance().currentState;
+	int maxbrightness = 50;
+	int cntr = 0;
+	int currbrightness = 50;
+	while (1) {
+		if(nextState != prevState){
+			if(currbrightness <= 0){
+				prevState = nextState;
+				currbrightness++;
+			}else{
+				currbrightness--;
+			}
+		}else if(currbrightness < maxbrightness){
+			currbrightness++;
+		}
+		cntr = (cntr+1)%(100*12);
+		switch (prevState){
+		case OFF:
+			clearAll();
+			break;
+		case FREE:
+			drawFree(cntr,currbrightness);
+			break;
+		case BUSY:
+			drawX(cntr,currbrightness);
+			break;
+		default:
+			break;
+		}
+		rc = led_strip_update_rgb(strip, pixels, STRIP_NUM_PIXELS);
+		if (rc) {
+			LOG_ERR("couldn't update strip: %d", rc);
+		}
+		k_sleep(DELAY_TIME);
+		if(nextState != Instance().currentState){
+			nextState = Instance().currentState;
+		}
+	}
+}
+```
+After some initialisation steps, all pixels of the strip are off. We store the current and the next state in separate variables. This allows us to transition between these in a smooth way. The `maxbrightness` variable sets the maximum brightness any color channel will have. It can be increased to 255 if the device is to be used in bright areas, but note that this will result in extra power consumption. The `currbrightness` variable stores the current brightness level, which is used during transitions between different states. If `Instance().currentState` does not match the state within the thread, the `nextState` gets updated and the following steps will occur:
+1. The brightness of the current animation is decremented at each iteration.
+2. When the brightness reaches 0, the state is updated to the new one, meaning that this iteration will display the new animation.
+3. The brightness is incremented at each iteration until `maxbrightness` is reached.
+
+The `cntr` is a variable which is used as the time-dependent parameter of the `drawFree` and `drawX` animations. `led_strip_update_rgb` is called in each iteration to set the LED pixel states on the display. The next functions we examine are `set()`, `clearAll()` and `flicker()` which are used by the animation functions (`drawX()`, `drawFree()`):
+
+```c
+void AppTask::set(int x, int y, int r, int g, int b){
+	int idx = 0;
+	if(y%2 == 0){
+		idx = y*12+(11-x);
+	}else{
+		idx = y*12+x;
+	}
+	pixels[idx].r = r;
+	pixels[idx].g = g;
+	pixels[idx].b = b;
+}
+void AppTask::clearAll(){
+	memset(&pixels, 0x00, sizeof(pixels));
+}
+int inline flicker(int value, int offset){
+	return (value*(100-abs(50-offset%100)))/100;
+}
+```
+
+The set function is a simple mapping of the strip to the coordinates shown in the following figure, enabling the use of 2D coordinates in the animations: 
+
+<p align="center"><img src="./imgs/led-order.jpg" width="80%"></p>
+
+`clearAll()` is used to clear the strip to black. `flicker()` is a simple mapper function which can be used to have a continuous linear change in the output between `value` and `value/2` depending on the offset. We will use it to get a pulsing effect. 
+
+
+
+//TODO:
+void setState(DispState newState);
+static void IdentifyStartHandler(Identify *identify);
+static void IdentifyStopHandler(Identify *identify);
+static void OnOffEffectHandler(OnOffEffect * effect);
+static void drawX(int offset100, int brightness);
+static void drawFree(int offset100, int brightness);
 
 
 
@@ -554,7 +676,8 @@ Some include directives are added, relating to the clusters we added. A new enum
 
 
 
-The file structure of the final Matter project should look something like this. 
+
+The file structure of the final Matter project should look something like this (some extra config files are not shown). 
 
 ```
 .
