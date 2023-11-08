@@ -131,10 +131,6 @@ i2s_led: &i2s0 {
 	pinctrl-names = "default";
 };
 
-&gpio1 {
-	status = "okay";
-};
-
 / {
 	led_strip: ws2812 {
 		compatible = "worldsemi,ws2812-i2s";
@@ -144,7 +140,6 @@ i2s_led: &i2s0 {
 		color-mapping = <LED_COLOR_ID_GREEN
 					LED_COLOR_ID_RED
 					LED_COLOR_ID_BLUE>;
-		// out-active-low;
 		reset-delay = <500>;
 	};
 
@@ -154,7 +149,7 @@ i2s_led: &i2s0 {
 };
 ```
 
-The I2S device is configured with the default pinout. From the four poins, `I2S_SDOUT` is the important one which is the data output. Controlling WS2812b LEDs is done over a single wire, which means that the timing of the signals is crucial. With the I2S interface, a fixed clock frequency is provided and then the output bits are set in a way to 'emulate' as if the pin was set at the required interval to the correct logic level by the bits output at the pin. Since the I2S pins are located at the GPIO bank 1, we need to enable that along with the I2S device. Finally, we need to add the `led_strip` to the devicetree. Here, the important parameters are the `reset-delay` and the `chain-length`. A major difference between the WS2812 and WS2812b(more common) LEDs is that the latter require at least a 500us reset time. Though it may work with less time, it is better to follow the specification. The `chain-length` should be set to the length of the LED chain. In our case, that is $5 \cdot 12 = 60$. A WS2812b LED at full brightness can consume 60mA, which would result in a 3.6A current draw if all LEDs would be turned to full brighness. I could not find what is the maximal current output the nRF7002DK can output at the 5V pin, but since the USB 2.0 specification has a 500mA limit (though it is usually possible to draw up to 2A), I soldered an external connector to be able to power the device from a separate 5V source. Additionally, when designing the animations on the display, an important consideration was this limit not to overload the voltage supply of the board. 
+The I2S device is configured with the default pinout. From the four poins, `I2S_SDOUT` is the important one which is the data output. Controlling WS2812b LEDs is done over a single wire, which means that the timing of the signals is crucial. With the I2S interface, a fixed clock frequency is provided and then the output bits are set in a way to 'emulate' as if the pin was set at the required interval to the correct logic level by the bits output at the pin. Then, we need to add the `led_strip` to the devicetree. Here, the important parameters are the `reset-delay` and the `chain-length`. A major difference between the WS2812 and WS2812b(more common) LEDs is that the latter require at least a 500us reset time. Though it may work with less time, it is better to follow the specification. The `chain-length` should be set to the length of the LED chain. In our case, that is $5 \cdot 12 = 60$. A WS2812b LED at full brightness can consume 60mA, which would result in a 3.6A current draw if all LEDs would be turned to full brighness. I could not find what is the maximal current output the nRF7002DK can output at the 5V pin, but since the USB 2.0 specification has a 500mA limit (though it is usually possible to draw up to 2A), I soldered an external connector to be able to power the device from a separate 5V source. Additionally, when designing the animations on the display, an important consideration was this limit not to overload the voltage supply of the board. 
 
 In addition to configuring the drivers, the following config parameters are also needed:
 
@@ -279,7 +274,323 @@ After editing and saving the `template.zap` file, the next step is to generate t
 clang-format error: [Errno 2] No such file or directory: 'clang-format'
 Files generated in: <absolute-path-to-project-folder>/src/zap-generated
  ```
-Afterwards, we can see that in the `src/zap-generated/` folder, the files were updated.
+Afterwards, we can see that in the `src/zap-generated/` folder, the files were updated. 
+
+### Adding WS2812b drivers
+The first step is to modify the `Kconfig` file as shown below. The `mainmenu` string can be freely modified. The important chanrge is to modify the `I2S` device to be enabled by default:
+
+```diff
+  #
+  # Copyright (c) 2022 Nordic Semiconductor
+  #
+  # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+  #
+- mainmenu "Matter nRF Connect Template Example Application"
++ mainmenu "MatterDoor"
+
+  # Sample configuration used for Thread networking
+  if NET_L2_OPENTHREAD
+
+  choice OPENTHREAD_NORDIC_LIBRARY_CONFIGURATION
+    default OPENTHREAD_NORDIC_LIBRARY_MTD
+  endchoice
+
+  choice OPENTHREAD_DEVICE_TYPE
+    default OPENTHREAD_MTD
+  endchoice
+
+  endif # NET_L2_OPENTHREAD
+
+  source "${ZEPHYR_BASE}/../modules/lib/matter/config/nrfconnect/chip-module/Kconfig.features"
+  source "${ZEPHYR_BASE}/../modules/lib/matter/config/nrfconnect/chip-module/Kconfig.defaults"
+  source "Kconfig.zephyr"
++
++ config I2S
++   default y
+```
+
+Then the next step is adding the configuration in the `nrf7002dk_nrf5340_cpuapp.overlay` file:
+
+```diff
+  /*
+  * Copyright (c) 2021 Nordic Semiconductor ASA
+  *
+  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+  */
+
+  #include <zephyr/dt-bindings/ipc_service/static_vrings.h>
++ #include <zephyr/dt-bindings/led/led.h>
+
+
+  / {
+    chosen {
+      nordic,pm-ext-flash = &mx25r64;
+    };
++     led_strip: ws2812 {
++     compatible = "worldsemi,ws2812-i2s";
++
++     i2s-dev = < &i2s_led >;
++     chain-length = <60>;
++     color-mapping = <LED_COLOR_ID_GREEN
++           LED_COLOR_ID_RED
++           LED_COLOR_ID_BLUE>;
++     reset-delay = <1000>;
++   };
++   aliases {
++     led-strip = &led_strip;
++   };
+  };
+
+  /* Set IPC thread priority to the highest value to not collide with other threads. */
+  &ipc0 {
+      zephyr,priority = <0 PRIO_COOP>;
+  };
+
++ i2s_led: &i2s0 {
++   status = "okay";
++   pinctrl-0 = <&i2s0_default_alt>;
++   pinctrl-names = "default";
++ };
++
++ i2s_pinconf: &pinctrl {
++   i2s0_default_alt: i2s0_default_alt {
++     group1 {
++       psels = <NRF_PSEL(I2S_SCK_M, 1, 15)>,
++         <NRF_PSEL(I2S_LRCK_M, 1, 12)>,
++         <NRF_PSEL(I2S_SDOUT, 1, 13)>,
++         <NRF_PSEL(I2S_SDIN, 1, 14)>;
++     };
++   };
++ };
++ &gpio1 {
++   status = "okay";
++ };
+```
+
+The changes to the overlay file are the same as the one introduced in the section about controlling the LEDs. And similarly as there, the `prj.conf` file also needs some modifications:
+
+```diff
+  #
+  # Copyright (c) 2021 Nordic Semiconductor ASA
+  #
+  # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+  #
+
+  # This sample uses Kconfig.defaults to set options common for all
+  # samples. This file should contain only options specific for this sample
+  # or overrides of default values.
+
+  # Enable CHIP
+  CONFIG_CHIP=y
+  CONFIG_CHIP_ENABLE_PAIRING_AUTOSTART=y
+  CONFIG_CHIP_PROJECT_CONFIG="src/chip_project_config.h"
+  # 32768 == 0x8000 (example Product ID added temporaly,
+  # but it must be changed with proper PID from the list:
+  # https://github.com/project-chip/connectedhomeip/blob/482e6fd03196a6de45465a90003947ef4b86e0b1/docs/examples/discussion/PID_allocation_for_example_apps.md)
+- CONFIG_CHIP_DEVICE_PRODUCT_ID=32768
++ # Lighting 0x8005
++ CONFIG_CHIP_DEVICE_PRODUCT_ID=32773
+  CONFIG_STD_CPP14=y
+
+  # Add support for LEDs and buttons on Nordic development kits
+  CONFIG_DK_LIBRARY=y
+
+  # Bluetooth Low Energy configuration
+- CONFIG_BT_DEVICE_NAME="MatterTemplate"
++ CONFIG_BT_DEVICE_NAME="MatterDoor"
+
+  # Other settings
+  CONFIG_THREAD_NAME=y
+  CONFIG_MPU_STACK_GUARD=y
+  CONFIG_RESET_ON_FATAL_ERROR=n
+  CONFIG_CHIP_LIB_SHELL=y
+
+  # Disable NFC commissioning
+  CONFIG_CHIP_NFC_COMMISSIONING=n
+
+  # Reduce application size
+  CONFIG_USE_SEGGER_RTT=n
++
++ CONFIG_SPI=y
++
++ CONFIG_I2S=y
++
++ CONFIG_LED_STRIP=y
++ CONFIG_WS2812_STRIP=y
++ CONFIG_WS2812_STRIP_I2S=y
+```
+
+The product ID (PID) is also modified, set to `0x8005`. This config is also used to select the correct certificate belonging to the vendor and product IDs (VID and PID). An built-in certificate is used in this case since the PID falls within the range `0x8000`-`0x801F`. For the final prodcut, a proper certificate should be used. More information is avaiblable about this in the [How to go to market with Matter](https://youtu.be/ZV6fjTLAqdA) webinar. For this demo project, it is fine to use the builtin certificate. 
+
+A less important file change is the modification of the `sample.yaml` file, which is used for tests, checking the devicetree:
+```diff
+  sample:
+-   description: Matter Template sample
++   description: Matter Door Status
+    name: Matter Template
+  tests:
+    # Excluded in quarantine.yaml to limit resources usage in integration builds
+        - nrf5340dk_nrf5340_cpuapp
+        - nrf7002dk_nrf5340_cpuapp
+      platform_allow: nrf52840dk_nrf52840 nrf5340dk_nrf5340_cpuapp nrf7002dk_nrf5340_cpuapp
++   sample.drivers.led.ws2812:
++     tags: LED
++     filter: dt_compat_enabled("worldsemi,ws2812-i2s")
++     harness_config:
++       fixture: fixture_led_ws2812
+```
+
+### Adding the logic
+
+Now we turn our attention to the `src` folder's contents. The Matter template project. Here is where the main logic will be. We have added the `On/Off`, the `Level Control` and the `Identify` endpoints to the `Endpoint - 1` cluster. (Descriptor is also added, but that will not be implemented for this demo.) The first changes relating to the `Identify` cluster are the same as shown in the ([Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk)) webinar. In `app_event.h`, two new calues need to be added to the `AppEventType` enum:
+
+```diff
+
+  class LEDWidget;
+
+- enum class AppEventType : uint8_t { None = 0, Button, ButtonPushed, ButtonReleased, Timer, UpdateLedState };
++ enum class AppEventType : uint8_t { None = 0, Button, ButtonPushed, ButtonReleased, Timer, UpdateLedState, IdenfityStart, IdentifyStop,};
+
+  enum class FunctionEvent : uint8_t { NoneSelected = 0, FactoryReset };
+```
+
+Next, in the `app_task.h`, there are several changes:
+
+```diff
+  /*
+  * Copyright (c) 2021 Nordic Semiconductor ASA
+  *
+  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+  */
+
+  #pragma once
+
+  #include "app_event.h"
+  #include "led_widget.h"
+
+  #include <platform/CHIPDeviceLayer.h>
+
+  #if CONFIG_CHIP_FACTORY_DATA
+  #include <platform/nrfconnect/FactoryDataProvider.h>
+  #else
+  #include <platform/nrfconnect/DeviceInstanceInfoProviderImpl.h>
+  #endif
+
++ #include <app/clusters/identify-server/identify-server.h>
++
++ #include <app/clusters/on-off-server/on-off-server.h>
++ #include <app/clusters/level-control/level-control.h>
++
+  struct k_timer;
+
+  class AppTask {
+  public:
+    static AppTask &Instance()
+    {
+      static AppTask sAppTask;
+      return sAppTask;
+    };
+
++    
++   enum DispState {
++     OFF = 0,
++     FREE = 1,
++     BUSY = 2
++   };
++
+    CHIP_ERROR StartApp();
+
+    static void PostEvent(const AppEvent &event);
++   void setState(DispState newState);
++   static void dispThread(void);
++   DispState currentState = OFF;
++
+
+  private:
+    CHIP_ERROR Init();
+
+    void CancelTimer();
+    void StartTimer(uint32_t timeoutInMs);
+
+    static void DispatchEvent(const AppEvent &event);
+    static void UpdateLedStateEventHandler(const AppEvent &event);
+    static void FunctionHandler(const AppEvent &event);
+    static void FunctionTimerEventHandler(const AppEvent &event);
+
+    static void ChipEventHandler(const chip::DeviceLayer::ChipDeviceEvent *event, intptr_t arg);
+    static void ButtonEventHandler(uint32_t buttonState, uint32_t hasChanged);
+    static void LEDStateUpdateHandler(LEDWidget &ledWidget);
+    static void FunctionTimerTimeoutCallback(k_timer *timer);
+    static void UpdateStatusLED();
+
++   static void IdentifyStartHandler(Identify *identify);
++   static void IdentifyStopHandler(Identify *identify);
++
++   static void OnOffEffectHandler(OnOffEffect * effect);
++   static void clearAll();
++   static void set(int x, int y, int r, int g, int b);
++   static void drawX(int offset100, int brightness);
++   static void drawFree(int offset100, int brightness);
+
+    FunctionEvent mFunction = FunctionEvent::NoneSelected;
+    bool mFunctionTimerActive = false;
+
++   static Identify sIdentify;
++   static OnOffEffect sOnOffEffect;
++
++
+  #if CONFIG_CHIP_FACTORY_DATA
+    chip::DeviceLayer::FactoryDataProvider<chip::DeviceLayer::InternalFlashFactoryData> mFactoryDataProvider;
+  #endif
+
+```
+
+Some include directives are added, relating to the clusters we added. A new enum is introduced (`DispState`), which will be used to sync the state of the sign between the Matter fabric and the MatterDoor device. Several other functions are added and two static variables. 
+
+
+
+
+
+
+
+
+The file structure of the final Matter project should look something like this. 
+
+```
+.
+├── CMakeLists.txt
+├── Kconfig
+├── README.rst
+├── boards
+│   └── nrf7002dk_nrf5340_cpuapp.overlay
+├── configuration
+│   └── nrf7002dk_nrf5340_cpuapp
+│       └── pm_static_dfu.yml
+├── prj.conf
+├── sample.yaml
+└── src
+    ├── app_config.h
+    ├── app_event.h
+    ├── app_task.cpp
+    ├── app_task.h
+    ├── callbacks.cpp
+    ├── chip_project_config.h
+    ├── main.cpp
+    ├── template.matter
+    ├── template.zap
+    └── zap-generated
+        ├── CHIPClientCallbacks.h
+        ├── CHIPClusters.h
+        ├── IMClusterCommandHandler.cpp
+        ├── PluginApplicationCallbacks.h
+        ├── access.h
+        ├── af-gen-event.h
+        ├── callback-stub.cpp
+        ├── endpoint_config.h
+        ├── gen_config.h
+        └── gen_tokens.h
+```
+
 
 ## Demo
 

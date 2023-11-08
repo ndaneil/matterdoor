@@ -70,30 +70,6 @@ void AppTask::set(int x, int y, int r, int g, int b){
 	pixels[idx].g = g;
 	pixels[idx].b = b;
 }
-void AppTask::add_dither_x_overflow(int x, int y, int r, int g, int b, int dither100){
-	int idx = 0;
-	if(y%2 == 0){
-		idx = y*12+(11-x);
-	}else{
-		idx = y*12+x;
-	}
-	int ra = (r*(100-dither100))/100;
-	int ga = (g*(100-dither100))/100;
-	int ba = (b*(100-dither100))/100;
-	pixels[idx].r += ra;
-	pixels[idx].g += ga;
-	pixels[idx].b += ba;
-	x  = (x+1)%12;
-	idx = 0;
-	if(y%2 == 0){
-		idx = y*12+(11-x);
-	}else{
-		idx = y*12+x;
-	}
-	pixels[idx].r += r-ra;
-	pixels[idx].g += g-ga;
-	pixels[idx].b += b-ba;
-}
 
 void AppTask::clearAll(){
 	memset(&pixels, 0x00, sizeof(pixels));

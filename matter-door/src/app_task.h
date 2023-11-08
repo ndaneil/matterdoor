@@ -18,9 +18,6 @@
 #endif
 
 #include <app/clusters/identify-server/identify-server.h>
-// #include <app/clusters/scenes/scenes.h>
-
-// #define EMBER_AF_PLUGIN_LEVEL_CONTROL
 
 #include <app/clusters/on-off-server/on-off-server.h>
 #include <app/clusters/level-control/level-control.h>
@@ -73,7 +70,6 @@ private:
 	static void OnOffEffectHandler(OnOffEffect * effect);
 	static void clearAll();
 	static void set(int x, int y, int r, int g, int b);
-	static void add_dither_x_overflow(int x, int y, int r, int g, int b, int dither100);
 	static void drawX(int offset100, int brightness);
 	static void drawFree(int offset100, int brightness);
 

@@ -6,8 +6,6 @@
 
 #include <zephyr/dt-bindings/ipc_service/static_vrings.h>
 #include <zephyr/dt-bindings/led/led.h>
-// #include <nordic/nrf5340_cpuapp_qkaa.dtsi>
-
 
 / {
 	chosen {
@@ -21,11 +19,7 @@
 		color-mapping = <LED_COLOR_ID_GREEN
 					LED_COLOR_ID_RED
 					LED_COLOR_ID_BLUE>;
-		// out-active-low;
 		reset-delay = <1000>;
-		// nibble-one = < 14 >;
-		// nibble-zero = < 8 >;
-		// extra-wait-time = < 600 >;
 		
 	};
 	aliases {

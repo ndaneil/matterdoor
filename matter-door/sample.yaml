@@ -1,6 +1,6 @@
 sample:
   description: Matter Door Status
-  name: Matter Template
+  name: MatterDoor
 tests:
   # Excluded in quarantine.yaml to limit resources usage in integration builds
   sample.matter.template.release:
