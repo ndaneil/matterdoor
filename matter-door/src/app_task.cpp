@@ -479,7 +479,7 @@ void AppTask::IdentifyStopHandler(Identify *) {
 	PostEvent(event);
 }
 void AppTask::OnOffEffectHandler(OnOffEffect *effect) {
-	//TODO....
+	// Empty for now
 }
 
 void AppTask::setState(DispState newState){

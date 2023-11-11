@@ -1,11 +1,10 @@
-# <img src="./logo.png" height="26" /> MatterDoor - Smart, Matter-capable do not disturb sign
+# <img src="./logo.png" height="26" /> MatterDoor - Smart do not disturb sign
 
 A problem I encountered during the pandemic attending onlinre lectures was that my family did not know when I had the lectures. They would enter the room during lectures or tests. The problem is also present when working from home. People walking in when attending meetings was something people had to get used to. **But there is a solution!** If you have visited a radio station or saw one in a move, you must have seen the large ON AIR signs which light up signaling you to be cautios. I have made one for myself during the pandemic to signal when not to enter. This project is a better version of that prototype. It has cool animations on the five-row RGB display in the front of the device. The brain of MatterDoor is the nRF7002DK, Nordic Semiconductor's latest Matter-capable development kit. MatterDoor can be commissioned to  and controlled via a custom Matter fabric using the Android app in this repository, or any existing Matter-compatible ecosystem. Say goodbye to interrupted meeting and lectures.
 
 This project is an entry to the [Make it Matter!](https://www.hackster.io/contests/makeitmatter) contest.
 
-## Matter
-<p align="center" style="background-color:white;"><img src="./imgs/matter-logo.png" width="40%"></p>
+## Matter and SDK
 
 [Matter](https://csa-iot.org/all-solutions/matter/) is a new application-layer protocol developed by members of the Connectivity Stands Alliance aiming to be the industry standard protocol for all IoT devices. Both Google and Apple pledged to support it for their smart home ecosystems. An important feature is the ability of Matter-compatible devices to be commissioned into multiple ecosystems (called Matter fabrics), allowing the end user the freedom to choose their ecosystem without having to worry whether the device will support it. Additionally, simultaneous control from separate ecosystems is also possible. 
 
@@ -796,7 +795,7 @@ void MatterPostAttributeChangeCallback(const chip::app::ConcreteAttributePath & 
 }
 ```
 
-In the callback, everything other than type `0x20` is filtered out. `0x20` corresponds to an unsigned 8-bit attribute, which is the type of the `CurrentLevel` attribute:
+In the callback, everything other than type `0x20` is filtered out. `0x20` corresponds to an unsigned 8-bit attribute, which is the type of the `CurrentLevel` attribute within the Level Control cluster:
 
 <p align="center"><img src="./imgs/zap-level-control.png" width="80%"></p>
 
@@ -852,16 +851,76 @@ The firmware in now complete, the final step is compiling it and flashing it on 
 ```
 
 
-## Android app
+## Matter fabric and Android app
 
+Now that MatterDoor device is ready, we need to connect it to a Matter fabric. I wanted to understand how the process would work if I had my own Fabric, so I chose to modify Google's [Google Home Mobile SDK Sample Applications for Matter](https://github.com/google-home/sample-apps-for-matter-android/tree/main). The final, modified code is available in the repository's [android-app](./android-app/) folder. The changes done can be categorised the following way:
+ - New icon 
+    - <img src="./logo.png" height="26" />
+ - Changing UI so that instead of a simple On/Off option, we have the option to select between the `FREE` as `BUSY` modes: <p align="center"><img src="./imgs/app-control.png" width="50%"></p>
 
+ - Replacing the On/Off cluter controller logic to Level cluster controlling logic. 
+   - A level setting of 0 means the device is `OFF`, 1 means `FREE`, 2 means `BUSY`.
+   - Though the On/Off cluter is also enabled on the nRF7002DK, that is not in use but for consitency, I used `setLevelDeviceStateOnOffCluster(...)` to set the level value. This function also controls the On/Off cluster automatically based on the level value. 
 
+### Commissioning MatterDoor to the custom fabric
 
+After building and launching the app on the phone, we can start adding a new device:
+1. Open the app and click on the plus icon on the bottom right corner to add a new device.
+2. Scan the QR code, which is available on the link output to the console of the nRF7002DK, or enter the setup code available on the console output.
+3. Wait for the commissioning process to complete. If the connection is unsuccessful, turn off any VPN connections on the phone, long press button 1 on the nRF7002DK for factory reset and try the process again.
+4. Name the device. I named my 'door'.
+5. Control the state of MatterDoor in the app.
+<p align="center"><img src="./imgs/setup-1.jpg" width="30%">&nbsp<img src="./imgs/setup-2.jpg" width="30%">&nbsp<img src="./imgs/setup-3.jpg" width="30%"></p>
 
-
-
+<p align="center"><img src="./imgs/setup-4.jpg" width="30%">&nbsp<img src="./imgs/setup-5.jpg" width="30%"></p>
 
 ## Demo
 
 
 
+## A note on licenses
+ - All third-party brands (including brand names, logos, trademarks and icons) remain the property of their respective owners. Matter is developed by the Connectivity Standards Alliance<sup>TM</sup>.
+ - The original Google Home Sample App for Matter is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). [As required by the terms of the license, a copy of the orignal terms is provided in the repository.](./android-app/original-LICENSE)
+ - The Matter template code used (https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template) is available under the following license: 
+```
+LicenseID:  LicenseRef-Nordic-5-Clause
+
+ExtractedText: <text>
+Copyright (c) 2018, Nordic Semiconductor ASA
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form, except as embedded into a Nordic
+   Semiconductor ASA integrated circuit in a product or a software update for
+   such product, must reproduce the above copyright notice, this list of
+   conditions and the following disclaimer in the documentation and/or other
+   materials provided with the distribution.
+
+3. Neither the name of Nordic Semiconductor ASA nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+4. This software, with or without modification, must only be used with a
+   Nordic Semiconductor ASA integrated circuit.
+
+5. Any software provided in binary form under this license must not be reverse
+   engineered, decompiled, modified and/or disassembled.
+
+THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
+OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</text>
+```
