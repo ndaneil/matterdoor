@@ -657,27 +657,164 @@ The set function is a simple mapping of the strip to the coordinates shown in th
 
 <p align="center"><img src="./imgs/led-order.jpg" width="80%"></p>
 
-`clearAll()` is used to clear the strip to black. `flicker()` is a simple mapper function which can be used to have a continuous linear change in the output between `value` and `value/2` depending on the offset. We will use it to get a pulsing effect. 
+`clearAll()` is used to clear the strip to black. `flicker()` is a simple mapper function which can be used to have a continuous linear change in the output between `value` and `value/2` depending on the offset. We will use it to get a pulsing effect. Now that the helper functions are defined, the next step is visualising the `FREE` and `BUSY` states:
+
+```c
+void AppTask::drawX(int offset100, int brightness){
+	int factor = offset100%100;
+	int offset = offset100/100;
+	clearAll();
+
+	set(4,1,flicker(brightness,factor),0,0);
+	set(5,1,flicker(brightness,factor),0,0);
+	set(6,1,flicker(brightness,factor),0,0);
+	set(7,1,flicker(brightness,factor),0,0);
+
+	set(4,2,flicker(brightness,factor+20),0,0);
+	set(7,2,flicker(brightness,factor+20),0,0);
+
+	set(4,3,flicker(brightness,factor+40),0,0);
+	set(7,3,flicker(brightness,factor+40),0,0);
+
+	set(4,3,flicker(brightness,factor+60),0,0);
+	set(5,3,flicker(brightness,factor+60),0,0);
+	set(6,3,flicker(brightness,factor+60),0,0);
+	set(7,3,flicker(brightness,factor+60),0,0);
+	
+	
+
+	int level = flicker(brightness,offset*9+factor/12)-brightness/3;
+	for(int i = 0; i < 5; i++){
+		set(0,i,level,brightness/10,0);
+		set(11,i,level,brightness/10,0);
+	}	
+}
+
+void AppTask::drawFree(int offset100, int brightness){
+	int factor = offset100%100;
+	int offset = (offset100/240)%5;
+	clearAll();
+
+	int fromzero = 120-abs(120-offset100%240);
+	int rcolor = (brightness*fromzero)/120;
+
+	set(0,0,0,flicker(brightness,factor),0);
+	set(11,0,0,flicker(brightness,factor),0);
+	
+	set(0,1,0,flicker(brightness,factor+20),0);
+	set(11,1,0,flicker(brightness,factor+20),0);
+	
+	set(0,2,0,flicker(brightness,factor+40),0);
+	set(11,2,0,flicker(brightness,factor+40),0);
+	
+	set(0,3,0,flicker(brightness,factor+60),0);
+	set(11,3,0,flicker(brightness,factor+60),0);
+	
+	set(0,4,0,flicker(brightness,factor+80),0);
+	set(11,4,0,flicker(brightness,factor+80),0);
+	
+	for(int i = 3; i < 9; i++){
+		set(i,offset,0,rcolor,0);
+	}
+}
+```
+Here is what these animations look like on the display:
+
+<p align="center"><img src="./imgs/state-free.gif" width="80%"></p>
 
 
+<p align="center"><img src="./imgs/state-busy.gif" width="80%"></p>
 
-//TODO:
-void setState(DispState newState);
-static void IdentifyStartHandler(Identify *identify);
-static void IdentifyStopHandler(Identify *identify);
-static void OnOffEffectHandler(OnOffEffect * effect);
-static void drawX(int offset100, int brightness);
-static void drawFree(int offset100, int brightness);
+There are some other functions that need to be defined:
 
+```c
+void AppTask::IdentifyStartHandler(Identify *) {
+	AppEvent event;
+	event.Type = AppEventType::IdenfityStart;
+	event.Handler = [](const AppEvent &event) {
+		sFactoryResetLEDs.Blink(LedConsts::kIndentifyBlinkRate_ms);
+	};
+	PostEvent(event);
+}
+void AppTask::IdentifyStopHandler(Identify *) {
+	AppEvent event;
+	event.Type = AppEventType::IdentifyStop;
+	event.Handler = [](const AppEvent &event) {
+		sFactoryResetLEDs.Set(false);
+	};
+	PostEvent(event);
+}
+void AppTask::OnOffEffectHandler(OnOffEffect *effect) {
 
+}
 
+void AppTask::setState(DispState newState){
+	currentState = newState;
+}
+```
+The identify cluster's functions are the same as in [Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk). The callback handlers are needed to initialise the `sIdentify` and `sOnOffEffect` variables. Additionally, the blynk rate and the light endpoint id needs to be defined. The location for these insertions can be checked in the [app_task.cpp](./matter-door/src/app_task.cpp) file.
+```c
+constexpr uint32_t kIndentifyBlinkRate_ms{ 500 };
+constexpr uint8_t kLightEndpointId = 1;
+Identify AppTask::sIdentify = { kLightEndpointId, AppTask::IdentifyStartHandler, AppTask::IdentifyStopHandler, EMBER_ZCL_IDENTIFY_IDENTIFY_TYPE_VISIBLE_LED};
+OnOffEffect AppTask::sOnOffEffect = { kLightEndpointId, AppTask::OnOffEffectHandler };
+```
 
+So far, the identify cluster is working and the animations for the states are defined, but how can we control this remotely? We need a way to set the state within our `AppTask` instance. To do that, let's create a new file, `callbacks.cpp`:
+```c
+#include "app_task.h"
+#include <app-common/zap-generated/attributes/Accessors.h>
+#include <app-common/zap-generated/ids/Clusters.h>
+#include <app/ConcreteAttributePath.h>
+#include <app/data-model/Nullable.h>
+#include <lib/core/DataModelTypes.h>
+#include <lib/support/CodeUtils.h>
+#include <app/clusters/on-off-server/on-off-server.h>
+#include <app/clusters/level-control/level-control.h>
 
+using namespace ::chip;
+using namespace ::chip::app::Clusters;
+using namespace ::chip::app::Clusters::ColorControl;
+using namespace ::chip::app::Clusters::LevelControl;
+using namespace ::chip::app::Clusters::OnOff;
+using ::chip::app::DataModel::Nullable;
 
+LOG_MODULE_DECLARE(app, CONFIG_CHIP_APP_LOG_LEVEL);
 
+void MatterPostAttributeChangeCallback(const chip::app::ConcreteAttributePath & attributePath, uint8_t type, uint16_t size,
+                                       uint8_t * value)
+{
 
+    LOG_INF("-----------------> Post attribute change callback! %d %d %d", type, size, *value);
 
-The file structure of the final Matter project should look something like this (some extra config files are not shown). 
+    if(type == 32){
+        if(size == 1){
+            LOG_INF("Setting display state to %d", *value);
+            AppTask::Instance().setState((AppTask::DispState) (*value));
+        }
+    }
+}
+```
+
+In the callback, everything other than type `0x20` is filtered out. `0x20` corresponds to an unsigned 8-bit attribute, which is the type of the `CurrentLevel` attribute:
+
+<p align="center"><img src="./imgs/zap-level-control.png" width="80%"></p>
+
+Checking the attribute this way is not ideal since other uint8 attributes can also alter the display state, but for now, there seemed to be no issues. Ideally, the attribute path would need to be checked instead. After filtering out the unrelevant messages, the state within the `AppTask` instance needs to be set and the rest in handled by the display task we wrote earlier. Finally, we need to add this file to the sources in `CMakeLists.txt`:
+```diff
+...
+  target_sources(app PRIVATE
+      src/app_task.cpp
+      src/main.cpp
+      src/zap-generated/IMClusterCommandHandler.cpp
+      src/zap-generated/callback-stub.cpp
++     src/callbacks.cpp
+      ${COMMON_ROOT}/src/led_widget.cpp
+  )
+...
+```
+
+The firmware in now complete, the final step is compiling it and flashing it on the nRF7002DK. The file structure of the final Matter project should look something like this (some extra unused config files are not shown). 
 
 ```
 .
@@ -713,6 +850,15 @@ The file structure of the final Matter project should look something like this (
         ├── gen_config.h
         └── gen_tokens.h
 ```
+
+
+## Android app
+
+
+
+
+
+
 
 
 ## Demo
