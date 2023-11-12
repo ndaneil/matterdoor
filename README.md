@@ -877,8 +877,7 @@ After building and launching the app on the phone, we can start adding a new dev
 <p align="center"><img src="./imgs/setup-4.jpg" width="30%">&nbsp<img src="./imgs/setup-5.jpg" width="30%"></p>
 
 ## Demo
-
-<p align="center"><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pnrHhVgbD28?si=TjMuLXMTMwGAOUAh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></p>
+[![demo video](./imgs/cover-play.png)](https://youtu.be/pnrHhVgbD28)
 
 
 ## A note on licenses
