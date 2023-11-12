@@ -1,5 +1,7 @@
 # <img src="./logo.png" height="26" /> MatterDoor - Smart do not disturb sign
 
+<p align="center"><img src="./imgs/cover.png" width="80%"></p>
+
 A problem I encountered during the pandemic attending onlinre lectures was that my family did not know when I had the lectures. They would enter the room during lectures or tests. The problem is also present when working from home. People walking in when attending meetings was something people had to get used to. **But there is a solution!** If you have visited a radio station or saw one in a move, you must have seen the large ON AIR signs which light up signaling you to be cautios. I have made one for myself during the pandemic to signal when not to enter. This project is a better version of that prototype. It has cool animations on the five-row RGB display in the front of the device. The brain of MatterDoor is the nRF7002DK, Nordic Semiconductor's latest Matter-capable development kit. MatterDoor can be commissioned to  and controlled via a custom Matter fabric using the Android app in this repository, or any existing Matter-compatible ecosystem. Say goodbye to interrupted meeting and lectures.
 
 This project is an entry to the [Make it Matter!](https://www.hackster.io/contests/makeitmatter) contest.
@@ -876,6 +878,7 @@ After building and launching the app on the phone, we can start adding a new dev
 
 ## Demo
 
+<p align="center"><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pnrHhVgbD28?si=TjMuLXMTMwGAOUAh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></p>
 
 
 ## A note on licenses
