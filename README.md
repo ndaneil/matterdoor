@@ -203,7 +203,7 @@ def detectZclFile(zapFile):
 
     return getFilePath(path, prefix_chip_root_dir)
 ```
-Node that in the case of using `relativeToZap`, the path is joined to the path of the `zapFile`. In the [matter template](https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template) the [template.zap](https://github.com/nrfconnect/sdk-nrf/blob/main/samples/matter/template/src/template.zap) file contains the following values:
+Node that in the case of using `relativeToZap`, the path is joined to the path of the `zapFile`. In the [matter template](https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template) the [template.zap](https://github.com/nrfconnect/sdk-nrf/blob/main/samples/matter/template/src/template.zap) file contains the following section:
 
 ``` json
  "package": [
