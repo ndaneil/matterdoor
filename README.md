@@ -2,9 +2,9 @@
 
 <p align="center"><img src="./imgs/cover.png" width="80%"></p>
 
-A problem I encountered during the pandemic attending onlinre lectures was that my family did not know when I had the lectures. They would enter the room during lectures or tests. The problem is also present when working from home. People walking in when attending meetings was something people had to get used to. **But there is a solution!** If you have visited a radio station or saw one in a move, you must have seen the large ON AIR signs which light up signaling you to be cautios. I have made one for myself during the pandemic to signal when not to enter. This project is a better version of that prototype. It has cool animations on the five-row RGB display in the front of the device. The brain of MatterDoor is the nRF7002DK, Nordic Semiconductor's latest Matter-capable development kit. MatterDoor can be commissioned to  and controlled via a custom Matter fabric using the Android app in this repository, or any existing Matter-compatible ecosystem. Say goodbye to interrupted meeting and lectures.
+A problem I encountered during the pandemic attending online lectures was that my family did not know when I had the lectures. They would enter the room during lectures or tests. The problem is also present when working from home. People walking in when attending meetings was something people had to get used to. **But there is a solution!** If you have visited a radio station or saw one in a movie, you must have seen the large ON AIR signs which light up signaling you to be cautious. I have made one for myself during the pandemic to signal when not to enter. This project is a better version of that prototype. It has cool animations on the five-row RGB display in the front of the device. The brain of MatterDoor is the nRF7002DK, Nordic Semiconductor's latest Matter-capable development kit. MatterDoor can be commissioned to  and controlled via a custom Matter fabric using the Android app in this repository, or any existing Matter-compatible ecosystem. Say goodbye to interrupted meeting and lectures.
 
-This project is an entry to the [Make it Matter!](https://www.hackster.io/contests/makeitmatter) contest.
+This project is also an entry to the [Make it Matter!](https://www.hackster.io/contests/makeitmatter) contest.
 
 ## Matter and SDK
 
@@ -14,34 +14,35 @@ This project was the first time I used the nRF SDK. I was happy to see that Nord
 
 <p align="center"><img src="./imgs/my-certificate.png" width="50%"></p>
 
- I highly recommend this course. Additionally, I have watched the following webinars on Matter:
+ I highly recommend this course. Additionally, I have watched the following webinars about Matter:
  - [Introduction to Matter](https://youtu.be/v_285vCHifw)
  - [Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk)
  - [How to go to market with Matter](https://youtu.be/ZV6fjTLAqdA)
 
+To get familiar with the concepts discussed here, I recommend to watch at least the first of these webinars.
 
 ## Hardware
 
 I applied for free hardware with my idea and got the nRF7002DK from Nordic Semiconductor. I decided to use the form factor of the development kit for the sign. I contemplated several display technologies:
- - E-ink has the advantages of low power consumption and vibrant colors in bright light. But for a do not disturb sign, we need a way to get the attention of the person approachin the door, so display technologies emitting light are more suitable for that purpose.
+ - E-ink has the advantages of low power consumption and vibrant colors in bright light. But for a do not disturb sign, we need a way to get the attention of the person approaching the door, so display technologies emitting light are more suitable for that purpose.
  - LCD displays offer high resolution while still being visible in the dark.
  - OLED displays have a great viewing angle, but are more expensive and the form factors are smaller.
  - Programmable LEDs offer a great way for custom displays, but the light needs to be deflected.
 
-In the end, I decided to use WS2812b programmable LEDs for the display part since I could design the display to match the dimensions of the nRF7002DK. It also meant that I could design some cool animations to be run on the display. To diffuse the light, I used tubes designed for LED strips.
+In the end, I decided to use WS2812B programmable LEDs for the display part since I could design the display to match the dimensions of the nRF7002DK. It also meant that I could design some cool animations to be run on the display. To diffuse the light, I used tubes designed for LED strips.
 
 ### BOM
 
-Apart from the 3D printed housing, the most important components are the WS2812b LED strip, the tube and the logic level shifter needed since the nRF3540 has 1.8V logic level pins:
+Apart from the 3D printed housing, the most important components are the WS2812B LED strip, the tube and the logic level shifter needed since the nRF3540 runs on 1.8V logic level in the nRF7002Dk:
 
 <p align="center"><img src="./imgs/components.jpg" width="50%"></p>
 
-All the components needed:
+The following list contains all the components needed:
  - Wires
  - One jumper wire
  - 500R resistor
  - 3K3 resistor
- - TXS0108E logic level shifter
+ - TXS0108E logic level shifter (or equivalent)
  - Tube for LED strip, 1m
  - WS2812B LED strip 96 pixels/leds/m, 1m
  - Perfboard
@@ -49,12 +50,12 @@ All the components needed:
 
 #### 3D-printed parts
 
-The housing I designed consists of four major parts and an optional switch cover. **The STL files of the degined casing are available [here](./3dfiles).** GitHub has a nice 3D viewer, but here are some screenshots from Shapr3D, the software I used to design the casing:
+The housing I designed consists of four major parts and an optional switch cover. **The STL files of the designed casing are available [here](./3dfiles).** GitHub has a nice 3D viewer, but here are some screenshots from Shapr3D, the software I used to design the casing:
 
 <p align="center"><img src="./imgs/3d-side.PNG" width="50%"><img src="./imgs/3d-fromtop.PNG" width="50%"></p>
 <p align="center"><img src="./imgs/3d-side2.PNG" width="50%"><img src="./imgs/3d-fromabove.PNG" width="50%"></p>
 
-**[The assembled 3D model can be viewed here.](./3dfiles/matterdoor-combined-do-not-use.stl)**
+The bottom part of the casing will house the nRF7002DK, while the top part will hold the LED tubes. **[The assembled 3D model can be viewed here.](./3dfiles/matterdoor-combined-do-not-use.stl)**
 
 ### Assembly
 
@@ -62,15 +63,15 @@ For the electronics-side, the components need to be soldered together based on t
 
 <p align="center"><img src="./imgs/schematic.png" width="50%"></p>
 
-The 8 pins grouped together on the left need to be connected to a header in the nRF7002DK and the `P1.13` label marks the wire that will be connected to that pin on the board:
+The 8 pins grouped together on the left need to be connected to a header in the nRF7002DK and the `P1.13` label marks the wire that needs to be connected to that pin on the board:
 
 <p align="center"><img src="./imgs/nrf7002dk-connect.jpg" width="80%"></p>
 
-**VDD is 1.8V.** Keeping the ording of the pins on the header is important, it has to be connected in that exact order. The wiring is shown below:
+**Keep in mind that VDD is 1.8V.** So using the correct ordering of the pins on the header is important, it has to be connected in that exact order. The wiring is shown below:
 
 <p align="center"><img src="./imgs/wiring1.jpg" height="200"><img src="./imgs/wiring2.jpg" height="200"></p>
 
-The three wires leaving the perfboard are to be connected to the LED strip. Cut five 12.5cm-long parts from the tube and cut five 12-pixel-long sections from the LED strip. The next step is placing the cut strip parts in alternate orientation parallel to each other. Soldering wires to the `GND` and `5V` pins is the next step, then connecting these and joining it to the `5V` and `GND` wires leaving the perfboard. The `DIN` wire from the perfboard needs to be connected to the input of the first strip section. Placing the LEDs in the tubes is the next step, followed by soldering the data wires between the strips the following way:
+The three wires leaving the perfboard are to be connected to the LED strip. Cut five, 12.5cm-long parts from the tube and cut five 12-pixel-long sections from the LED strip. The next step is placing the cut strip parts in alternate orientation parallel to each other. Soldering wires to the `GND` and `5V` pins on one side of the strips is the next step, then connecting these and joining it to the `5V` and `GND` wires leaving the perfboard. The `DIN` wire from the perfboard needs to be connected to the input of the first strip section. Placing the LEDs in the tubes is the next step, followed by soldering the data wires between the strips the following way:
 
 <p align="center"><img src="./imgs/rows-wiring.jpg" width="80%"></p>
 
@@ -78,7 +79,7 @@ The next step is putting double-sided tape on the top cover. It may not be stron
 
 <p align="center"><img src="./imgs/top-tape.jpg" width="80%"></p>
 
-After securing the tubes on the top plate, the two side pieces can be slided over from the sides. The three wires leaving the top panel need to be routed through one of the two holes in the top panel.
+After securing the tubes on the top plate, the two side pieces can be slid over from the sides. The three wires leaving the top panel need to be routed through one of the two holes in the top panel.
 
 <p align="center"><img src="./imgs/pillars.jpg" width="80%"></p>
 
@@ -86,7 +87,7 @@ After securing the tubes on the top plate, the two side pieces can be slided ove
 
 <p align="center"><img src="./imgs/top-assembled.jpg" width="80%"></p>
 
-The assembly of the top part is then complete. An additional wires can be soldered to the `5V` and `GND` pins so that power can be supplied over that instead of the Micro USB port. The perfboard can be covered up with hot glue. An important part is the side close to the nRF7002DK board. Putting a piece of duct tape there is needed to prevent potential short circuits.
+The assembly of the top part is then complete. Two additional wires can be soldered to the `5V` and `GND` pins so that power can be supplied directly instead of through the Micro USB port. The perfboard can be covered up with hot glue. An important part is to cover up the side close to the nRF7002DK board. Putting a piece of duct tape there is needed to prevent potential short circuits.
 
 <p align="center"><img src="./imgs/connected.jpg" width="80%"></p>
 
@@ -108,7 +109,9 @@ There were three main challenges with the software:
 
 ### Controlling the LEDs
 
-As someone familiar with the Arduino framework, I got used to having lots of libraries and examples for peripherials. Controlling WS2812b LEDs just worked with every microcontoller I have tried before. Even with 3.3V logic level microcontrollers like the ESP32, running a [FastLED](https://github.com/FastLED/FastLED) or a [NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) example code worked out of the box. Since the nRF7002DK is a relatively new board, so far the [official Zephyr repo](https://github.com/zephyrproject-rtos/zephyr/tree/d5a1a8bf04c9a4a1f7b9c73f2426368e93844143/samples/drivers/led_ws2812/boards) did not support that board. As a result, I looked for example elsewhere. The only example I could find was a [hackster.io project](https://www.hackster.io/mahmood-ul-hassan/how-to-interface-nordic-thingy-53-with-neopixels-ws2812b-c79533). As shown in the hardware section, the board has a 1.8V logic level, which makes a logic level shifter necessary. Even though I added one, I could not get the example to work. I tried modifying the official example from the Zephyr repo to work with the nRF53 and I managed to make it work. But it was unstable. I could control the first couple of LEDs, but afterwards, the LEDs just showed random colors. I adjusted several config options, but the display was still unstable. It was at that point that I decided to [raise a ticket in Nordic DevZone](https://devzone.nordicsemi.com/f/nordic-q-a/105200/ws2812-driver-for-nrf5340) to ask if there was an official example. Thanks to Kenneth from Nordic, I started investigating if the level shifting was not working correctly. I switched to using the `TXS0108E` shown in the hardware section, but I still could not get a stable output. The final solution was to add the two resistors, one to pull high the Output Enable pin of the level shifter, the other to add resistance between the first LED's input and the bi-directional level shifter's high side. With these, controlling the display works flawlessly. In the spirit of open soure, I created a pull request in the Zephyr repository to add nRF7002DK support to the WS2812 example: https://github.com/zephyrproject-rtos/zephyr/pull/64823
+As someone familiar with the Arduino framework, I got used to having lots of libraries and examples for peripherals. Controlling WS2812B LEDs just worked with every microcontoller I have tried before. Even with 3.3V logic level microcontrollers like the ESP32, running a [FastLED](https://github.com/FastLED/FastLED) or a [NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) example code worked out of the box. Since the nRF7002DK is a relatively new board, so far the [official Zephyr repo](https://github.com/zephyrproject-rtos/zephyr/tree/d5a1a8bf04c9a4a1f7b9c73f2426368e93844143/samples/drivers/led_ws2812/boards) did not support that board. As a result, I looked for example elsewhere. The only example I could find was a [hackster.io project](https://www.hackster.io/mahmood-ul-hassan/how-to-interface-nordic-thingy-53-with-neopixels-ws2812b-c79533). As shown in the hardware section, the board has 1.8V logic level, which makes a logic level shifter necessary. Even though I added one, I could not get the example to work. I tried modifying the official example from the Zephyr repo to work with the nRF53 and I managed to make it work. But it was unstable. I could control the first couple of LEDs, but afterwards, the LEDs just showed random colors. I adjusted several config options, but the display was still unstable. It was at that point that I decided to [raise a ticket in Nordic DevZone](https://devzone.nordicsemi.com/f/nordic-q-a/105200/ws2812-driver-for-nrf5340) to ask if there was an official example. Thanks to Kenneth from Nordic, I started investigating if the level shifting was working correctly. I switched to using the `TXS0108E` shown in the hardware section, but I still could not get a stable output. The final solution was to add the two resistors, one to pull high the Output Enable pin of the level shifter, the other to add resistance between the first LED's input and the bi-directional level shifter's high side. With these, controlling the display works flawlessly. In the spirit of open source, I created a pull request in the Zephyr repository to add support for nRF53-based boards (including nRF7002DK) in the WS2812 example: https://github.com/zephyrproject-rtos/zephyr/pull/64823
+
+#### The solution
 
 The LEDs are controlled over the I2S interface of the nRF5340. The overlay file for the board is the following:
 ``` c
@@ -150,7 +153,9 @@ i2s_led: &i2s0 {
 };
 ```
 
-The I2S device is configured with the default pinout. From the four poins, `I2S_SDOUT` is the important one which is the data output. Controlling WS2812b LEDs is done over a single wire, which means that the timing of the signals is crucial. With the I2S interface, a fixed clock frequency is provided and then the output bits are set in a way to 'emulate' as if the pin was set at the required interval to the correct logic level by the bits output at the pin. Then, we need to add the `led_strip` to the devicetree. Here, the important parameters are the `reset-delay` and the `chain-length`. A major difference between the WS2812 and WS2812b(more common) LEDs is that the latter require at least a 500us reset time. Though it may work with less time, it is better to follow the specification. The `chain-length` should be set to the length of the LED chain. In our case, that is $5 \cdot 12 = 60$. A WS2812b LED at full brightness can consume 60mA, which would result in a 3.6A current draw if all LEDs would be turned to full brighness. I could not find what is the maximal current output the nRF7002DK can output at the 5V pin, but since the USB 2.0 specification has a 500mA limit (though it is usually possible to draw up to 2A), I soldered an external connector to be able to power the device from a separate 5V source. Additionally, when designing the animations on the display, an important consideration was this limit not to overload the voltage supply of the board. 
+The I2S device is configured with the default pinout. From the four pins, `I2S_SDOUT` is the important one, which is the data output. Controlling WS2812B LEDs is achieved over a single wire, which means that the timing of the signals is crucial. With the I2S interface, a fixed clock frequency is provided and then the output bits are set in a way to 'emulate' as if the pin was set at the required interval to the correct logic level by the bits output to the `I2S_SDOUT` pin. 
+
+The `led_strip` needs to be added to the devicetree. Here, the important parameters are the `reset-delay` and the `chain-length`. A major difference between the WS2812 and WS2812B(more common) LEDs is that the latter require at least a 500us reset time. Though it may work with less time, it is better to follow the specification. The `chain-length` should be set to the length of the LED strip. In our case, that is $5 \cdot 12 = 60$. A WS2812B LED at full brightness can consume 60mA, which would result in a 3.6A current draw if all LEDs would be turned to full brightness. I could not find what is the maximal current output the nRF7002DK can output at the 5V pin, but since the USB 2.0 specification has a 500mA limit (though it is usually possible to draw up to 2A), I soldered an external connector to be able to power the device from a separate 5V source. Additionally, when designing the animations on the display, an important consideration was this limit not to overload the voltage supply of the board. 
 
 In addition to configuring the drivers, the following config parameters are also needed:
 
@@ -161,7 +166,7 @@ CONFIG_I2S=y
 CONFIG_WS2812_STRIP=y
 CONFIG_WS2812_STRIP_I2S=y
 ```
-Since in the official WS2812 Zephyr example, SPI is the default device, that needs to be turned off and I2S on. The LED driver also needs to be enabled and the I2S mode needs to be set. With these parameters, it is possible to control the LEDs. 
+Since in the official WS2812 Zephyr example, SPI is the default device, that needs to be turned off and I2S on. The LED driver also needs to be enabled and the I2S mode needs to be set. With these parameters, it is possible to control the LEDs by the nRF7002DK.
 
 ### Modifying the matter template
 
@@ -172,7 +177,7 @@ zap ./src/template.zap
 
 <p align="center"><img src="./imgs/zap-zigbee.png" width="80%"></p>
 
-And there were no options to add Matter-specific endpoints. Then after saving the file, lots of options were removed from the `template.zap` file. (I could see this from the diff). And the example that I could previously comple no longer worked. After tedious debugging, I found what was going on. In the [source code of the ZAP generate script](https://github.com/project-chip/connectedhomeip/blob/master/scripts/tools/zap/generate.py#L87-L108) we have the following function for detecting the ZCL config files:
+And there were no options to add Matter-specific endpoints. Then after saving the file, lots of lines were removed from the `template.zap` file. (I could see this from the diff). And the example that I could previously compile no longer worked. After tedious debugging, I found what was going on. In the [source code of the ZAP generate script](https://github.com/project-chip/connectedhomeip/blob/master/scripts/tools/zap/generate.py#L87-L108) we have the following function for detecting the ZCL config files:
 
 ```python
 def detectZclFile(zapFile):
@@ -198,7 +203,7 @@ def detectZclFile(zapFile):
 
     return getFilePath(path, prefix_chip_root_dir)
 ```
-In the [matter template](https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template) the [template.zap](https://github.com/nrfconnect/sdk-nrf/blob/main/samples/matter/template/src/template.zap) file contains the following values:
+Node that in the case of using `relativeToZap`, the path is joined to the path of the `zapFile`. In the [matter template](https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template) the [template.zap](https://github.com/nrfconnect/sdk-nrf/blob/main/samples/matter/template/src/template.zap) file contains the following values:
 
 ``` json
  "package": [
@@ -218,7 +223,7 @@ In the [matter template](https://github.com/nrfconnect/sdk-nrf/tree/main/samples
     }
   ],
   ```
-We can see that both the `zcl.json` and `app-templates.json` files are referenced relative to the location of the `template.zap` file. This was an issue for me since on my computer, I installed the nRF tools to `/opt/nordic/` and the project was locaded in a folder in my home directory. Due to this, neither the `generate.py` script, nor the ZAP tool could find these files. The paths needed to be modified in `template.zap` to the correct values:
+We can see that both the `zcl.json` and `app-templates.json` files are referenced relative to the location of the `template.zap` file. This was an issue for me since on my computer, I installed the nRF tools to `/opt/nordic/` and the project was located in a folder in my home directory. Due to this, neither the `generate.py` script, nor the ZAP tool could find these files. The paths needed to be modified in `template.zap` to the correct values:
 ``` json
   "package": [
     {
@@ -237,14 +242,16 @@ We can see that both the `zcl.json` and `app-templates.json` files are reference
     }
   ],
 ```
-Note that `pathRelativity` was set to `absolute` which is not one of options in the `generate.py` source code, meaning that the path will be used as is, resulting in an absolute path. After opening the zap tool from the command line, the `Matter`-related configuration were correcly loaded and I was able to add a new endpoint:
+Note that `pathRelativity` was set to `absolute` which is not one of options in the `generate.py` source code, meaning that the path will be used as is, resulting in an absolute path. After opening the zap tool from the command line, the Matter-related configurations were correctly loaded and I was able to add a new endpoint:
 
 <p align="center"><img src="./imgs/zap-matter.png" width="80%"></p>
 
-One thing to keep in mind is that after saving the file, the ZAP tool re-fills the paths to be relative! I added a `Matter extended color light`, but later turned on the color-related clusters. Apart from the `Identify` and `On/Off` clusters, the `Level Control` cluster was also used. This cluster will be the one controlling the state of the display. For the do not disturb sign, there are three states that need to be distinguished:
- - OFF - Turning off the display to save power
- - FREE - Actively signal that it is free to enter
- - BUSY - Signal not to enter
+One thing to keep in mind is that after saving the file, the ZAP tool overwrites the paths to be relative again! 
+
+I added a `Matter extended color light`, but later turned off the color-related clusters. Apart from the `Identify` and `On/Off` clusters, the `Level Control` cluster was also used. This cluster will be the one controlling the state of the display. For the do not disturb sign, there are three states that need to be distinguished:
+ - `OFF ` - Turning off the display to save power
+ - `FREE` - Actively signal that it is okay to enter
+ - `BUSY` - Signal not to enter
 
 After editing and saving the `template.zap` file, the next step is to generate the files. In the code below, I replaced the absolute path to the folder of my Matter template project with `<absolute-path-to-project-folder>`.
 
@@ -275,10 +282,10 @@ After editing and saving the `template.zap` file, the next step is to generate t
 clang-format error: [Errno 2] No such file or directory: 'clang-format'
 Files generated in: <absolute-path-to-project-folder>/src/zap-generated
  ```
-Afterwards, we can see that in the `src/zap-generated/` folder, the files were updated. 
+Afterwards, we can see that in the `src/zap-generated/` folder, the files were updated. Now the next step is adding the LED controller and animation logic, and configuring the handlers for the clusters that were added.
 
-### Adding WS2812b drivers
-The first step is to modify the `Kconfig` file as shown below. The `mainmenu` string can be freely modified. The important chanrge is to modify the `I2S` device to be enabled by default:
+### Adding WS2812B drivers
+The first step is to modify the `Kconfig` file as shown below. The `mainmenu` string can be freely modified. The important change is to modify the `I2S` device to be enabled by default:
 
 ```diff
   #
@@ -413,17 +420,15 @@ The changes to the overlay file are the same as the one introduced in the sectio
   CONFIG_USE_SEGGER_RTT=n
 +
 + CONFIG_SPI=y
-+
 + CONFIG_I2S=y
-+
 + CONFIG_LED_STRIP=y
 + CONFIG_WS2812_STRIP=y
 + CONFIG_WS2812_STRIP_I2S=y
 ```
 
-The product ID (PID) is also modified, set to `0x8005`. This config is also used to select the correct certificate belonging to the vendor and product IDs (VID and PID). An built-in certificate is used in this case since the PID falls within the range `0x8000`-`0x801F`. For the final prodcut, a proper certificate should be used. More information is avaiblable about this in the [How to go to market with Matter](https://youtu.be/ZV6fjTLAqdA) webinar. For this demo project, it is fine to use the builtin certificate. 
+The product ID (PID) is also modified, set to `0x8005`. This config is also used to select the correct certificate belonging to the vendor and product IDs (VID and PID). A built-in certificate is used in this case since the PID falls within the range `0x8000`-`0x801F`. For a final product, a proper certificate should be used. More information is available about this in the [How to go to market with Matter](https://youtu.be/ZV6fjTLAqdA) webinar. For this demo project, it is fine to use the builtin certificate. 
 
-A less important file change is the modification of the `sample.yaml` file, which is used for tests, checking the devicetree:
+A less important, optional change is the modification of the `sample.yaml` file, which is used for tests, checking the devicetree:
 ```diff
   sample:
 -   description: Matter Template sample
@@ -443,7 +448,7 @@ A less important file change is the modification of the `sample.yaml` file, whic
 
 ### Adding the logic
 
-Now we turn our attention to the `src` folder's contents. The Matter template project. Here is where the main logic will be. We have added the `On/Off`, the `Level Control` and the `Identify` endpoints to the `Endpoint - 1` cluster. (Descriptor is also added, but that will not be implemented for this demo.) The first changes relating to the `Identify` cluster are the same as shown in the ([Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk)) webinar. In `app_event.h`, two new calues need to be added to the `AppEventType` enum:
+Now we turn our attention to the `src` folder's contents. Here is where the main logic will be. We have added the `On/Off`, the `Level Control` and the `Identify` endpoints to the `Endpoint - 1` cluster. (A `Descriptor` cluster is also added, but that will not be implemented for now.) The first changes relating to the `Identify` cluster are the same as shown in the [Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk) webinar. In `app_event.h`, two new values need to be added to the `AppEventType` enum:
 
 ```diff
 
@@ -538,15 +543,14 @@ Next, in the `app_task.h`, there are several changes:
 
 +   static Identify sIdentify;
 +   static OnOffEffect sOnOffEffect;
-+
-+
+
   #if CONFIG_CHIP_FACTORY_DATA
     chip::DeviceLayer::FactoryDataProvider<chip::DeviceLayer::InternalFlashFactoryData> mFactoryDataProvider;
   #endif
 
 ```
 
-Some include directives are added, relating to the clusters we added. A new enum is introduced (`DispState`), which will be used to sync the state of the sign between the Matter fabric and the MatterDoor device. Several other functions are added and two static variables. The implementation of all of these functions is shown and explained below.
+Some include directives are added, relating to the clusters added earlier to the zap file. A new enum is introduced (`DispState`), which will be used to sync the state of the sign between the Matter fabric and the MatterDoor device. Several other functions are added and two static variables for the handlers. The implementations of all of these functions are shown and explained below.
 
 The `app_task.cpp` file starts with the following macros and declarations:
 
@@ -572,7 +576,7 @@ The `app_task.cpp` file starts with the following macros and declarations:
 + K_THREAD_DEFINE(disp_thread, 2048, AppTask::dispThread, NULL, NULL, NULL, DISPLAY_TASK_PRIORITY, 0, 0);
 ```
 
-After the includes, we get the `STRIP_NODE` from the devicetree and the number of pixel of our LED strip from that node. We define a 6 millisecond delay time which will be used for the times between two frames of the `BUSY` and `FREE` state animations. We also define a more conenient way to use RGB colors. The `DISPLAY_TASK_PRIORITY` is used for the new thread we are defining in the last line in the above code. This thread is responsible for displaying the animations on our five-row WS2812b display. We also define the `pixels` variable which we will use to set the colors of the strip and the `strip` variable, which will be used to control the the LED strip. Let's check the dispThread function next:
+After the includes, we get the `STRIP_NODE` from the devicetree and the number of pixels of the LED strip from that node. A 6 millisecond delay time is defined, which will be used for the delay between two frames of the `BUSY` and `FREE` state animations. We also define a more convenient way to use RGB colors. The `DISPLAY_TASK_PRIORITY` is used for the new thread we are defining in the last line of the above code. This thread will be responsible for displaying the animations on the five-row WS2812B display. We also define the `pixels` variable which will be used to set the colors of the strip. The `strip` variable will be used to control the the LED strip. Let's check the newly created `dispThread()` function next:
 
 ```c
 void AppTask::dispThread(void){
@@ -627,12 +631,14 @@ void AppTask::dispThread(void){
 	}
 }
 ```
-After some initialisation steps, all pixels of the strip are off. We store the current and the next state in separate variables. This allows us to transition between these in a smooth way. The `maxbrightness` variable sets the maximum brightness any color channel will have. It can be increased to 255 if the device is to be used in bright areas, but note that this will result in extra power consumption. The `currbrightness` variable stores the current brightness level, which is used during transitions between different states. If `Instance().currentState` does not match the state within the thread, the `nextState` gets updated and the following steps will occur:
+After some initialisation steps, all pixels of the strip are off. We store the current and the next state in separate variables. This allows us to transition between these in a smooth way. The `maxbrightness` variable sets the maximum brightness any color channel will have. It can be increased to 255 if the device is to be used in bright areas, but note that this will result in increased power consumption. The `currbrightness` variable stores the current brightness level, which is used during transitions between different states. If `Instance().currentState` does not match the state within the thread, the `nextState` gets updated and the following steps will occur:
 1. The brightness of the current animation is decremented at each iteration.
-2. When the brightness reaches 0, the state is updated to the new one, meaning that this iteration will display the new animation.
+2. When the brightness reaches 0, the state is updated to the new one, meaning that starting this iteration, the new animation is displayed.
 3. The brightness is incremented at each iteration until `maxbrightness` is reached.
 
-The `cntr` is a variable which is used as the time-dependent parameter of the `drawFree` and `drawX` animations. `led_strip_update_rgb` is called in each iteration to set the LED pixel states on the display. The next functions we examine are `set()`, `clearAll()` and `flicker()` which are used by the animation functions (`drawX()`, `drawFree()`):
+ `cntr` is a variable which is used as a time parameter of the `drawFree` and `drawX` animations to signal which frame to draw. `led_strip_update_rgb` is called in each iteration to set the LED pixel states on the display based on the contents of the `pixels` array. 
+ 
+ The next functions we examine are `set()`, `clearAll()` and `flicker()`, which are used by the animation functions (`drawX()`, `drawFree()`):
 
 ```c
 void AppTask::set(int x, int y, int r, int g, int b){
@@ -654,11 +660,13 @@ int inline flicker(int value, int offset){
 }
 ```
 
-The set function is a simple mapping of the strip to the coordinates shown in the following figure, enabling the use of 2D coordinates in the animations: 
+The `set(...)` function is a simple mapping of the strip to the coordinates shown in the following figure, enabling the use of 2D coordinates in the animations: 
 
 <p align="center"><img src="./imgs/led-order.jpg" width="80%"></p>
 
-`clearAll()` is used to clear the strip to black. `flicker()` is a simple mapper function which can be used to have a continuous linear change in the output between `value` and `value/2` depending on the offset. We will use it to get a pulsing effect. Now that the helper functions are defined, the next step is visualising the `FREE` and `BUSY` states:
+`clearAll()` is used to clear the strip to black. `flicker(...)` is a simple mapper function which can be used to have a continuous linear change in the output between `value` and `value/2` depending on the offset. We will use it to get a pulsing effect. 
+
+Now that the helper functions are defined, the next step is visualising the `FREE` and `BUSY` states:
 
 ```c
 void AppTask::drawX(int offset100, int brightness){
@@ -726,7 +734,7 @@ Here is what these animations look like on the display:
 
 <p align="center"><img src="./imgs/state-busy.gif" width="80%"></p>
 
-There are some other functions that need to be defined:
+The handler functions also need to be defined:
 
 ```c
 void AppTask::IdentifyStartHandler(Identify *) {
@@ -753,7 +761,7 @@ void AppTask::setState(DispState newState){
 	currentState = newState;
 }
 ```
-The identify cluster's functions are the same as in [Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk). The callback handlers are needed to initialise the `sIdentify` and `sOnOffEffect` variables. Additionally, the blynk rate and the light endpoint id needs to be defined. The location for these insertions can be checked in the [app_task.cpp](./matter-door/src/app_task.cpp) file.
+The `Identify` cluster's functions are the same as in [Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk). The callback handlers are needed to initialise the `sIdentify` and `sOnOffEffect` variables. Additionally, the blynk rate and the light endpoint id needs to be defined. The location for these insertions can be checked in the [app_task.cpp](./matter-door/src/app_task.cpp) file.
 ```c
 constexpr uint32_t kIndentifyBlinkRate_ms{ 500 };
 constexpr uint8_t kLightEndpointId = 1;
@@ -852,31 +860,32 @@ The firmware in now complete, the final step is compiling it and flashing it on 
         └── gen_tokens.h
 ```
 
-
 ## Matter fabric and Android app
 
 Now that MatterDoor device is ready, we need to connect it to a Matter fabric. I wanted to understand how the process would work if I had my own Fabric, so I chose to modify Google's [Google Home Mobile SDK Sample Applications for Matter](https://github.com/google-home/sample-apps-for-matter-android/tree/main). The final, modified code is available in the repository's [android-app](./android-app/) folder. The changes done can be categorised the following way:
- - New icon 
-    - <img src="./logo.png" height="26" />
- - Changing UI so that instead of a simple On/Off option, we have the option to select between the `FREE` as `BUSY` modes: <p align="center"><img src="./imgs/app-control.png" width="50%"></p>
+ - New icon 🎉 :
+    - <img src="./logo.png" height="36" />
+ - Changing UI so that instead of a simple On/Off option, we have the option to select between the `FREE` as `BUSY` modes in addition to the `OFF` mode: <p align="center"><img src="./imgs/app-control.png" width="50%"></p>
 
  - Replacing the On/Off cluter controller logic to Level cluster controlling logic. 
    - A level setting of 0 means the device is `OFF`, 1 means `FREE`, 2 means `BUSY`.
-   - Though the On/Off cluter is also enabled on the nRF7002DK, that is not in use but for consitency, I used `setLevelDeviceStateOnOffCluster(...)` to set the level value. This function also controls the On/Off cluster automatically based on the level value. 
+   - Though the On/Off cluter is also enabled on the nRF7002DK, that is not in use. For consitency, I used `setLevelDeviceStateOnOffCluster(...)` to set the level value. This function also controls the On/Off cluster automatically based on the level value. 
 
 ### Commissioning MatterDoor to the custom fabric
 
 After building and launching the app on the phone, we can start adding a new device:
 1. Open the app and click on the plus icon on the bottom right corner to add a new device.
 2. Scan the QR code, which is available on the link output to the console of the nRF7002DK, or enter the setup code available on the console output.
-3. Wait for the commissioning process to complete. If the connection is unsuccessful, turn off any VPN connections on the phone, long press button 1 on the nRF7002DK for factory reset and try the process again.
-4. Name the device. I named my 'door'.
-5. Control the state of MatterDoor in the app.
+3. Wait for the commissioning process to complete. If the connection is unsuccessful, turn off any VPN connections on the phone, long press button 1 on the nRF7002DK to factory reset it, and try the process again.
+4. Name the device.
+5. Control the display state of MatterDoor from the app.
 <p align="center"><img src="./imgs/setup-1.jpg" width="30%">&nbsp<img src="./imgs/setup-2.jpg" width="30%">&nbsp<img src="./imgs/setup-3.jpg" width="30%"></p>
 
 <p align="center"><img src="./imgs/setup-4.jpg" width="30%">&nbsp<img src="./imgs/setup-5.jpg" width="30%"></p>
 
 ## Demo
+Click on the image below to view the demo video showing the setup process and MatterDoor in use. 
+
 [![demo video](./imgs/cover-play.png)](https://youtu.be/pnrHhVgbD28)
 
 
