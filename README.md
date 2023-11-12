@@ -172,7 +172,7 @@ CONFIG_WS2812_STRIP_I2S=y
 ```
 Since in the official WS2812 Zephyr example, SPI is the default device, that needs to be turned off and I2S on. The LED driver also needs to be enabled and the I2S mode needs to be set. With these parameters, it is possible to control the LEDs from the nRF7002DK.
 
-### Modifying the matter template
+### Modifying the Matter template
 
 In the [Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9Ar13rMxGIk?t=2053) webinar, there was an example on how to use the Matter-template project and modify it to be a simple Matter light switch. I tried to follow that tutorial, but I encountered a strange issue at the ZAP step. ZAP is the program that would need to be used to create the Matter endpoint configuration. But there was a problem: whenever I would edit the configuration, it would show the zigbee configuration:
 ``` bash
