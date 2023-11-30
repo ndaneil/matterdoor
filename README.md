@@ -475,12 +475,12 @@ Next, in the `app_task.h`, there are multiple changes needed:
   #include "app_event.h"
   #include "led_widget.h"
 
-  #include <divlatform/CHIPDeviceLayer.h>
+  #include <platform/CHIPDeviceLayer.h>
 
   #if CONFIG_CHIP_FACTORY_DATA
-  #include <divlatform/nrfconnect/FactoryDataProvider.h>
+  #include <platform/nrfconnect/FactoryDataProvider.h>
   #else
-  #include <divlatform/nrfconnect/DeviceInstanceInfoProviderImpl.h>
+  #include <platform/nrfconnect/DeviceInstanceInfoProviderImpl.h>
   #endif
 
 + #include <app/clusters/identify-server/identify-server.h>
