@@ -1,0 +1,14 @@
+code {
+    font-size: 8px;
+    line-height:110%;
+}
+p, li, ul {
+    text-align: justify;
+    text-justify: inter-word;
+}
+h2 {
+    font-weight: bold;
+}
+h3 {
+    font-weight: bold;
+}

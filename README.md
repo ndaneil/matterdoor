@@ -1,18 +1,16 @@
 # <img src="./logo.png" height="26" /> MatterDoor - Smart do not disturb sign
 
-<p align="center"><img src="./imgs/cover.png" width="80%"></p>
+<div align="center"><img src="./imgs/cover.png" width="80%"></div>
+
+This project is also an entry to the [Make it Matter!](https://www.hackster.io/contests/makeitmatter) contest organized by Hackster.io and Nordic Semiconductor. My entry is available here: [https://www.hackster.io/ndaniel/smart-do-not-disturb-sign-1a102f](https://www.hackster.io/ndaniel/smart-do-not-disturb-sign-1a102f). The interactive version of this document, which includes the source code and 3D design files too, is available here: [https://github.com/ndaneil/matterdoor/](https://github.com/ndaneil/matterdoor/)
 
 A problem I encountered during the pandemic attending online lectures was that my family did not know when I had my online classes. They would enter the room during lectures or tests. The problem is also present when working from home. People walking in when attending meetings was something everyone had to get used to. **But there is a solution!** If you have visited a radio station or saw one in a movie, you must have seen the large ON AIR signs which light up signaling you to be cautious. I have made one for myself during the pandemic to signal when not to enter. This project is a better version of that prototype. It has cool animations on the five-row RGB display in the front of the device. The brain of MatterDoor is the nRF7002DK, Nordic Semiconductor's latest Matter-capable development kit. MatterDoor can be commissioned to  and controlled via a custom Matter fabric using the Android app in this repository, or any existing Matter-compatible ecosystem. Say goodbye to interrupted meeting and lectures.
-
-This project is also an entry to the [Make it Matter!](https://www.hackster.io/contests/makeitmatter) contest.
 
 ## Matter and SDK
 
 [Matter](https://csa-iot.org/all-solutions/matter/) is a new application-layer protocol developed by members of the Connectivity Stands Alliance aiming to be the industry standard protocol for all IoT devices. Both Google and Apple pledged to support it for their smart home ecosystems. An important feature is the ability of Matter-compatible devices to be commissioned into multiple ecosystems (called Matter fabrics), allowing the end user the freedom to choose their ecosystem without having to worry whether the device will support it. Additionally, simultaneous control from separate ecosystems is also possible. 
 
-This project was the first time I used the nRF SDK. I was happy to see that Nordic offers an [nRF Connect SDK Fundamentals](https://academy.nordicsemi.com/courses/nrf-connect-sdk-fundamentals/) course, which I have completed, earning a certificate 🎉
-
-<p align="center"><img src="./imgs/my-certificate.png" width="50%"></p>
+This project was the first time I used the nRF SDK. I was happy to see that Nordic offers an [nRF Connect SDK Fundamentals](https://academy.nordicsemi.com/courses/nrf-connect-sdk-fundamentals/) course, which I have completed, learning about the SDK, the principles of low-level parallelism, multithreading and Zephyr RTOS. After completing the course, I have also earned a certificate.
 
  I highly recommend this course. Additionally, I have watched the following webinars about Matter:
  - [Introduction to Matter](https://youtu.be/v_285vCHifw)
@@ -35,7 +33,7 @@ In the end, I decided to use WS2812B programmable LEDs for the display part sinc
 
 Apart from the 3D printed housing, the most important components are the WS2812B LED strip, the tube and the logic level shifter needed since the nRF3540 runs on 1.8V logic level in the nRF7002Dk:
 
-<p align="center"><img src="./imgs/components.jpg" width="50%"></p>
+<div align="center"><img src="./imgs/components.jpg" width="50%"></div>
 
 The following list contains all the components needed:
  - Wires
@@ -52,8 +50,8 @@ The following list contains all the components needed:
 
 The housing I designed consists of four major parts and an optional switch cover. **The STL files of the designed casing are available [here](./3dfiles).** GitHub has a nice 3D viewer, but here are some screenshots from Shapr3D, the software I used to design the casing:
 
-<p align="center"><img src="./imgs/3d-side.PNG" width="50%"><img src="./imgs/3d-fromtop.PNG" width="50%"></p>
-<p align="center"><img src="./imgs/3d-side2.PNG" width="50%"><img src="./imgs/3d-fromabove.PNG" width="50%"></p>
+<div align="center"><img src="./imgs/3d-side.PNG" width="50%"><img src="./imgs/3d-fromtop.PNG" width="50%"></div>
+<div align="center"><img src="./imgs/3d-side2.PNG" width="50%"><img src="./imgs/3d-fromabove.PNG" width="50%"></div>
 
 The bottom part of the casing will house the nRF7002DK, while the top part will hold the LED tubes. **[The assembled 3D model can be viewed here.](./3dfiles/matterdoor-combined-do-not-use.stl)**
 
@@ -61,15 +59,15 @@ The bottom part of the casing will house the nRF7002DK, while the top part will 
 
 For the electronics-side, the components need to be soldered together based on the following schematic:
 
-<p align="center"><img src="./imgs/schematic.png" width="50%"></p>
+<div align="center"><img src="./imgs/schematic.png" width="50%"></div>
 
 The 8 pins grouped together on the left need to be connected to a header in the nRF7002DK and the `P1.13` label marks the wire that needs to be connected to that pin on the board:
 
-<p align="center"><img src="./imgs/nrf7002dk-connect.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/nrf7002dk-connect.jpg" width="80%"></div>
 
 **Keep in mind that VDD is 1.8V.** So using the correct ordering of the pins on the header is important, it has to be connected in that exact order. The wiring is shown below:
 
-<p align="center"><img src="./imgs/wiring1.jpg" height="200"><img src="./imgs/wiring2.jpg" height="200"></p>
+<div align="center"><img src="./imgs/wiring1.jpg" height="200"><img src="./imgs/wiring2.jpg" height="200"></div>
 
 The three wires leaving the perfboard are to be connected to the LED strip. 
 
@@ -77,29 +75,29 @@ The three wires leaving the perfboard are to be connected to the LED strip.
 
 Cut five, 12.5cm-long sections from the tube and cut five 12-pixel-long sections from the LED strip. The next step is placing the cut strip parts in alternate orientation parallel to each other. Soldering wires to the `GND` and `5V` pins on one side of the strips is the next step, then connecting these and joining it to the `5V` and `GND` wires leaving the perfboard. The `DIN` wire from the perfboard needs to be connected to the input of the first strip section. Placing the LEDs in the tubes is the next step, followed by soldering the data wires between the strips the following way:
 
-<p align="center"><img src="./imgs/rows-wiring.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/rows-wiring.jpg" width="80%"></div>
 
 The next step is putting double-sided tape on the top cover. It may not be strong enough, so some other glue can be used as well:
 
-<p align="center"><img src="./imgs/top-tape.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/top-tape.jpg" width="80%"></div>
 
 After securing the tubes on the top plate, the two side pieces can be slid over from the sides. The three wires leaving the top panel need to be routed through one of the two holes in the top panel.
 
-<p align="center"><img src="./imgs/pillars.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/pillars.jpg" width="80%"></div>
 
-<p align="center"><img src="./imgs/halfassembled.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/halfassembled.jpg" width="80%"></div>
 
-<p align="center"><img src="./imgs/top-assembled.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/top-assembled.jpg" width="80%"></div>
 
 The assembly of the top part is then complete. Two additional wires can be soldered to the `5V` and `GND` pins so that power can be supplied directly instead of through the Micro USB port. The perfboard can be covered up with hot glue. An important part is to cover up the side close to the nRF7002DK board. Putting a piece of duct tape there is needed to prevent potential short circuits.
 
-<p align="center"><img src="./imgs/connected.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/connected.jpg" width="80%"></div>
 
 The last step is assembling the top and bottom parts and the hardware-part is complete:
 
-<p align="center"><img src="./imgs/assembled-side.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/assembled-side.jpg" width="80%"></div>
 
-<p align="center"><img src="./imgs/assembled-top.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/assembled-top.jpg" width="80%"></div>
 
 ## Software
 
@@ -113,7 +111,7 @@ There were three main challenges with the software:
 
 ### Controlling the LEDs
 
-As someone familiar with the Arduino framework, I got used to having lots of libraries and examples for peripherals. Controlling WS2812B LEDs just worked with every microcontoller I have tried before. Even with 3.3V logic level microcontrollers like the ESP32, running a [FastLED](https://github.com/FastLED/FastLED) or a [NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) example code worked out of the box. Since the nRF7002DK is a relatively new board, so far the [official Zephyr repo](https://github.com/zephyrproject-rtos/zephyr/tree/d5a1a8bf04c9a4a1f7b9c73f2426368e93844143/samples/drivers/led_ws2812/boards) did not support it. As a result, I looked for examples elsewhere. The only example I could find was a [hackster.io project](https://www.hackster.io/mahmood-ul-hassan/how-to-interface-nordic-thingy-53-with-neopixels-ws2812b-c79533). As shown in the hardware section, the board has 1.8V logic level, which makes a logic level shifter necessary. Even though I added one, I could not get the example to work. I tried modifying the official example from the Zephyr repo to work with the nRF53 and I managed to make it work, but it was unstable. I could control the first couple of LEDs, but afterwards, the LEDs just showed random colors. I adjusted several config options, but the display was still unstable. It was at that point that I decided to [raise a ticket in Nordic DevZone](https://devzone.nordicsemi.com/f/nordic-q-a/105200/ws2812-driver-for-nrf5340) to ask if there was an official example. Thanks to Kenneth from Nordic, I started investigating if the level shifting was working correctly. I switched to using the `TXS0108E` shown in the hardware section, but I still could not get a stable output. The final solution was to add the two resistors, one to pull high the Output Enable pin of the level shifter, the other to add resistance between the first LED's input and the bi-directional level shifter's high side. With these, controlling the display works flawlessly. In the spirit of open source, I created a pull request in the Zephyr repository to add support for nRF53-based boards (including nRF7002DK) in the WS2812 example: https://github.com/zephyrproject-rtos/zephyr/pull/64823
+As someone familiar with the Arduino framework, I got used to having lots of libraries and examples for peripherals. Controlling WS2812B LEDs just worked with every microcontoller I have tried before. Even with 3.3V logic level microcontrollers like the ESP32, running a [FastLED](https://github.com/FastLED/FastLED) or a [NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) example code worked out of the box. Since the nRF7002DK is a relatively new board, so far the [official Zephyr repo](https://github.com/zephyrproject-rtos/zephyr/tree/d5a1a8bf04c9a4a1f7b9c73f2426368e93844143/samples/drivers/led_ws2812/boards) did not support it. As a result, I looked for examples elsewhere. The only example I could find was a [hackster.io project](https://www.hackster.io/mahmood-ul-hassan/how-to-interface-nordic-thingy-53-with-neopixels-ws2812b-c79533). As shown in the hardware section, the board has 1.8V logic level, which makes a logic level shifter necessary. Even though I added one, I could not get the example to work. I tried modifying the official example from the Zephyr repo to work with the nRF53 and I managed to make it work, but it was unstable. I could control the first couple of LEDs, but afterwards, the LEDs just showed random colors. I adjusted several config options, but the display was still unstable. It was at that point that I decided to [raise a ticket in Nordic DevZone](https://devzone.nordicsemi.com/f/nordic-q-a/105200/ws2812-driver-for-nrf5340) to ask if there was an official example. Thanks to Kenneth from Nordic, I started investigating if the level shifting was working correctly. I switched to using the `TXS0108E` shown in the hardware section, but I still could not get a stable output. The final solution was to add the two resistors, one to pull high the Output Enable pin of the level shifter, the other to add resistance between the first LED's input and the bi-directional level shifter's high side. With these, controlling the display works flawlessly. In the spirit of open source, I created a pull request in the Zephyr repository to add support for nRF53-based boards (including nRF7002DK) in the WS2812 example: [https://github.com/zephyrproject-rtos/zephyr/pull/64823](https://github.com/zephyrproject-rtos/zephyr/pull/64823)
 
 #### The solution
 
@@ -179,7 +177,7 @@ In the [Developing Matter 1.0 products with nRF Connect SDK](https://youtu.be/9A
 zap ./src/template.zap
 ```
 
-<p align="center"><img src="./imgs/zap-zigbee.png" width="80%"></p>
+<div align="center"><img src="./imgs/zap-zigbee.png" width="80%"></div>
 
 And there were no options to add Matter-specific endpoints. Then after saving the file, lots of lines were removed from the `template.zap` file. (I could see this from the diff). And the example that I could previously compile no longer worked. After tedious debugging, I found what was going on. In the [source code of the ZAP generate script](https://github.com/project-chip/connectedhomeip/blob/master/scripts/tools/zap/generate.py#L87-L108) we have the following function for detecting the ZCL config files:
 
@@ -248,7 +246,7 @@ We can see that both the `zcl.json` and `app-templates.json` files are reference
 ```
 Note that `pathRelativity` is changed to `absolute` which is not one of options in the `generate.py` source code, meaning that the path will be used as is, resulting in an absolute path. After opening the zap tool from the terminal, the Matter-related configurations were correctly loaded and I was able to add a new endpoint:
 
-<p align="center"><img src="./imgs/zap-matter.png" width="80%"></p>
+<div align="center"><img src="./imgs/zap-matter.png" width="80%"></div>
 
 One thing to keep in mind is that after saving the file, the ZAP tool overwrites the paths to be relative again! 
 
@@ -477,12 +475,12 @@ Next, in the `app_task.h`, there are multiple changes needed:
   #include "app_event.h"
   #include "led_widget.h"
 
-  #include <platform/CHIPDeviceLayer.h>
+  #include <divlatform/CHIPDeviceLayer.h>
 
   #if CONFIG_CHIP_FACTORY_DATA
-  #include <platform/nrfconnect/FactoryDataProvider.h>
+  #include <divlatform/nrfconnect/FactoryDataProvider.h>
   #else
-  #include <platform/nrfconnect/DeviceInstanceInfoProviderImpl.h>
+  #include <divlatform/nrfconnect/DeviceInstanceInfoProviderImpl.h>
   #endif
 
 + #include <app/clusters/identify-server/identify-server.h>
@@ -667,7 +665,7 @@ int inline flicker(int value, int offset){
 
 The `set(...)` function is a simple mapping of the strip to the coordinates shown in the following figure, enabling the use of 2D coordinates in the animations: 
 
-<p align="center"><img src="./imgs/led-order.jpg" width="80%"></p>
+<div align="center"><img src="./imgs/led-order.jpg" width="80%"></div>
 
 `clearAll()` is used to clear the strip to black. `flicker(...)` is a simple mapper function which can be used to have a continuous linear change in the output between `value` and `value/2` depending on the offset. We will use it to get a pulsing effect. 
 
@@ -734,10 +732,13 @@ void AppTask::drawFree(int offset100, int brightness){
 ```
 Here is what these animations look like on the display:
 
-<p align="center"><img src="./imgs/state-free.gif" width="80%"></p>
+<div align="center"><img src="./imgs/state-free.gif" width="80%"></div>
 
+[https://github.com/ndaneil/matterdoor/blob/main/imgs/state-free.gif](https://github.com/ndaneil/matterdoor/blob/main/imgs/state-free.gif)
 
-<p align="center"><img src="./imgs/state-busy.gif" width="80%"></p>
+<div align="center"><img src="./imgs/state-busy.gif" width="80%"></div>
+
+[https://github.com/ndaneil/matterdoor/blob/main/imgs/state-busy.gif](https://github.com/ndaneil/matterdoor/blob/main/imgs/state-busy.gif)
 
 The handler functions also need to be defined:
 
@@ -812,7 +813,7 @@ void MatterPostAttributeChangeCallback(const chip::app::ConcreteAttributePath & 
 
 In the callback, everything other than type `0x20` is filtered out. `0x20` corresponds to an unsigned 8-bit attribute, which is the type of the `CurrentLevel` attribute within the Level Control cluster:
 
-<p align="center"><img src="./imgs/zap-level-control.png" width="80%"></p>
+<div align="center"><img src="./imgs/zap-level-control.png" width="80%"></div>
 
 Checking the attribute this way is not ideal since other `uint8` attributes can also alter the display state, but for now, there seemed to be no issues. Ideally, the attribute path would need to be checked instead. After filtering out the unrelevant messages, the state within the `AppTask` instance needs to be set and the rest is handled by the display shown earlier. Finally, we need to add this file to the sources in `CMakeLists.txt`:
 ```diff
@@ -868,9 +869,9 @@ The firmware in now complete, the final step is compiling it and flashing it to 
 ## Matter fabric and Android app
 
 Now that the MatterDoor device is ready, we need to connect it to a Matter fabric. I wanted to understand how the process would work if I had my own Fabric, so I chose to modify Google's [Google Home Mobile SDK Sample Applications for Matter](https://github.com/google-home/sample-apps-for-matter-android/tree/main). The final, modified code is available in the repository's [android-app](./android-app/) folder. The changes done can be categorised the following way:
- - New icon 🎉 :
-    - <img src="./logo.png" height="36" />
- - Changing UI so that instead of a simple On/Off option, we have the option to select between the `FREE` and `BUSY` modes in addition to the `OFF` mode: <p align="center"><img src="./imgs/app-control.png" width="50%"></p>
+ - New icon:
+   <img src="./logo.png" height="36" />
+ - Changing UI so that instead of a simple On/Off option, we have the option to select between the `FREE` and `BUSY` modes in addition to the `OFF` mode: <div align="center"><img src="./imgs/app-control.png" width="50%"></div>
 
  - Replacing the On/Off cluster controller logic to Level cluster controlling logic. 
    - A level setting of 0 means the device is `OFF`, 1 means `FREE`, 2 means `BUSY`.
@@ -884,59 +885,14 @@ After building and launching the app on the phone, we can start adding a new dev
 3. Wait for the commissioning process to complete. If the connection is unsuccessful, turn off any VPN connections on the phone, long press button 1 on the nRF7002DK to factory reset it, and try the process again.
 4. Name the device.
 5. Control the display state of MatterDoor from the app.
-<p align="center"><img src="./imgs/setup-1.jpg" width="30%">&nbsp<img src="./imgs/setup-2.jpg" width="30%">&nbsp<img src="./imgs/setup-3.jpg" width="30%"></p>
+<div align="center"><img src="./imgs/setup-1.jpg" width="30%">&nbsp<img src="./imgs/setup-2.jpg" width="30%">&nbsp<img src="./imgs/setup-3.jpg" width="30%"></div>
 
-<p align="center"><img src="./imgs/setup-4.jpg" width="30%">&nbsp<img src="./imgs/setup-5.jpg" width="30%"></p>
+<div align="center"><img src="./imgs/setup-4.jpg" width="30%">&nbsp<img src="./imgs/setup-5.jpg" width="30%"></div>
 
 ## Demo
-Click on the image below to view the demo video showing the setup process and MatterDoor in use. 
-
-[![demo video](./imgs/cover-play.png)](https://youtu.be/WkWZ09pOQfc)
-
+The demo video showing the setup process and MatterDoor in use is available here: [https://github.com/ndaneil/matterdoor/#demo](https://github.com/ndaneil/matterdoor/#demo)
 
 ## A note on licenses
  - All third-party brands (including brand names, logos, trademarks and icons) remain the property of their respective owners. Matter is developed by the Connectivity Standards Alliance<sup>TM</sup>.
- - The original Google Home Sample App for Matter is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). [As required by the terms of the license, a copy of the orignal terms is provided in the repository.](./android-app/original-LICENSE)
- - The Matter template code used (https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template) is available under the following license: 
-```
-LicenseID:  LicenseRef-Nordic-5-Clause
-
-ExtractedText: <text>
-Copyright (c) 2018, Nordic Semiconductor ASA
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form, except as embedded into a Nordic
-   Semiconductor ASA integrated circuit in a product or a software update for
-   such product, must reproduce the above copyright notice, this list of
-   conditions and the following disclaimer in the documentation and/or other
-   materials provided with the distribution.
-
-3. Neither the name of Nordic Semiconductor ASA nor the names of its
-   contributors may be used to endorse or promote products derived from this
-   software without specific prior written permission.
-
-4. This software, with or without modification, must only be used with a
-   Nordic Semiconductor ASA integrated circuit.
-
-5. Any software provided in binary form under this license must not be reverse
-   engineered, decompiled, modified and/or disassembled.
-
-THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
-OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-</text>
-```
+ - The original Google Home Sample App for Matter is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
+ - The Matter template code used ([https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template](https://github.com/nrfconnect/sdk-nrf/tree/main/samples/matter/template)) is available under the following license: [https://github.com/nrfconnect/sdk-nrf/blob/main/LICENSE](https://github.com/nrfconnect/sdk-nrf/blob/main/LICENSE)
